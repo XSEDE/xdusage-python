@@ -8,5 +8,9 @@ def readme():
 
 setup(name='xdusage',
       version='1.0',
+      description='XSEDE xdusage utility',
+      author='Choonhan, JP',
+      author_email='cyoun@sdsc.edu',
+      url='https://github.com/XSEDE/xdusage-python',
       scripts=['bin/xdusage','bin/xdusage_v1.py', 'bin/xdusage_v2.py'],
       )
