@@ -17,6 +17,7 @@ from urllib.error import HTTPError
 # from datetime import datetime
 import datetime
 
+XDUSAGE_CONFIG_FILE = "xdusage_v2.conf"
 APIKEY = None
 APIID = None
 resource = None
@@ -778,8 +779,8 @@ def check_sudo():
         sys.stderr.write("The /etc/sudoers file is not set up correctly.\n")
         if is_root:
             msg = "The /etc/sudoers file needs to contain the following lines in order for non-root users to run " \
-                  "correctly:\t\$Default!{}/xdusage runas_default=xdusage\t\$Default!{}/xdusage " \
-                  "env_keep=\"USER\"\tALL  ALL=(xdusage) NOPASSWD:{}/xdusage".format(install_dir, install_dir,
+                  "correctly:\t\nDefault!{}/xdusage runas_default=xdusage\t\nDefault!{}/xdusage " \
+                  "env_keep=\"USER\"\t\nALL  ALL=(xdusage) NOPASSWD:{}/xdusage\n".format(install_dir, install_dir,
                                                                                      install_dir)
             sys.stderr.write(msg)
             sys.exit()
@@ -800,7 +801,7 @@ def setup_conf():
 
     # Create the empty configuration file in /etc.
     hostname = socket.gethostname()
-    local_conf_file = "/etc/xdusage.conf"
+    local_conf_file = "/etc/{}".format(XDUSAGE_CONFIG_FILE)
     try:
         open_mode = 0o640
         con_fd = os.open(local_conf_file, os.O_WRONLY | os.O_CREAT, open_mode)
@@ -1191,7 +1192,7 @@ def get_resources():
         # create a rest url and fetch
         url = "{}/xdusage/v2/resources/{}".format(rest_url, urllib.parse.quote(pat))
         result = json_get(url)
-        print('get resources = {} result = {}'.format(pat, result))
+        # print('get resources = {} result = {}'.format(pat, result))
         any_r = 0
         for r in result['result']:
             resource_list.append(r['resource_id'])
@@ -1276,9 +1277,9 @@ def check_config():
     # (api_id, api_key, rest_url_base, resource_name, admin_name)
     # file is simple key=value, ignore lines that start with #
     # list of possible config file locations
-    conf_file_list = ['/etc/xdusage.conf',
-                      '/var/secrets/xdusage.conf',
-                      "{}/../etc/xdusage.conf".format(install_dir),
+    conf_file_list = ['/etc/{}'.format(XDUSAGE_CONFIG_FILE),
+                      '/var/secrets/{}'.format(XDUSAGE_CONFIG_FILE),
+                      "{}/../etc/{}".format(install_dir, XDUSAGE_CONFIG_FILE),
                       ]
 
     # use the first one found.
@@ -1311,23 +1312,25 @@ def check_config():
     root_uid = pwd.getpwnam("root").pw_uid
     # print("sb uid = {} root uid = {}".format(sb.st_uid, root_uid))
     if sb.st_uid != root_uid:
-        # config_error("Configuration file '{}' must be owned by user 'root'.".format(conf_file), num_parameters=2)
-        pass
+        config_error("Configuration file '{}' must be owned by user 'root'.".format(conf_file), num_parameters=2)
+        # pass
     try:
         xdusage_gid = grp.getgrnam("xdusage").gr_gid
     except KeyError:
         xdusage_gid = -1
     # print("sb gid = {} xdusage gid = {}".format(sb.st_gid, xdusage_gid))
     if sb.st_gid != xdusage_gid:
-        # config_error("Configuration file '{}' must be owned by group 'xdusage'.".format(conf_file), num_parameters=2)
-        pass
+        config_error("Configuration file '{}' must be owned by group 'xdusage'.".format(conf_file), num_parameters=2)
+        # pass
     # Check that the configuration file has the correct permissions.
-    mode = stat.S_IMODE(sb.st_mode)
+    # mode = stat.S_IMODE(sb.st_mode)
+    mode = oct(sb.st_mode)[-3:]
     # print('mode = {} sb mode = {}'.format(mode, sb))
-    if mode != 640:
-        message = "Configuration file '{}' has permissions '{}', it must have permissions '0640'.".format(conf_file,
-                                                                                                          mode)
-        # config_error(message, num_parameters=2)
+    # print("\nFile permission mask (in octal):", oct(sb.st_mode)[-3:])
+    if mode != '640':
+        message = "Configuration file '{}' has permissions '{}', it must have permissions '0640'.".format(conf_file, mode)
+        # uncomment it
+        config_error(message, num_parameters=2)
 
     # line_list = list(con_fd.readlines())
     # i = 0
