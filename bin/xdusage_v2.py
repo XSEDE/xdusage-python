@@ -612,25 +612,25 @@ def show_project(project):
         if amt == 0 and options.zero_accounts:
             continue
         if not any1:
-            print("Project: {}".format(project['charge_number']))
-            print("/{}".format(project['resource_name']))
+            print("Project: {}".format(project['charge_number']), end='')
+            print("/{}".format(project['resource_name']), end='')
             if project['project_state'] != 'active':
-                print(" status=inactive")
-            print("\n")
-            print("PI: {}\n".format(
+                print(" status=inactive", end='')
+            print("")
+            print("PI: {}".format(
                 fmt_name(project['pi_first_name'], project['pi_middle_name'], project['pi_last_name'])))
-            print("{}\n".format(ux))
+            print("{}".format(ux))
             any1 = 1
 
-        print(" {} {}".format(w, name))
+        print(" {} {}".format(w, name), end='')
         if username:
-            print(" portal={}".format(username))
+            print(" portal={}".format(username), end='')
         if a1['account_state'] != 'active':
-            print(" status=inactive")
-        print(" usage={} {}\n".format(fmt_amount(amt if amt else 0), x))
+            print(" status=inactive", end='')
+        print(" usage={} {}".format(fmt_amount(amt if amt else 0), x))
 
         for x in j:
-            print("      job")
+            print("      job", end='')
             id = x['local_job_id']
             show_value("id", id)
             show_value("jobname", x['jobname'])
@@ -645,26 +645,26 @@ def show_project(project):
             show_value("queue", x['queue'])
             show_value("walltime", x['wall_time'])
             show_amt("charge", x['charge'])
-            print("\n")
+            print("")
             if options.job_attributes:
                 job_id = x['job_id']
                 jav = get_job_attributes(job_id)
                 for jav1 in jav:
-                    print("        job-attr")
+                    print("        job-attr", end='')
                     show_value("id", id)
                     show_value("name", jav1['name'])
                     show_value("value", jav1['value'])
-                    print("\n")
+                    print("")
 
         for x in cd:
-            print("     {}".format(x['type']))
-            print(" resource={}".format(x['site_resource_name']))
-            print(" date={}".format(fmt_datetime(x['charge_date'])))
-            print(" amount={}".format(fmt_amount(abs(x['amount']))))
-            print("\n")
+            print("     {}".format(x['type']), end='')
+            print(" resource={}".format(x['site_resource_name']), end='')
+            print(" date={}".format(fmt_datetime(x['charge_date'])), end='')
+            print(" amount={}".format(fmt_amount(abs(x['amount']))), end='')
+            print("")
 
     if any1:
-        print("\n")
+        print("")
     return any1
 
 
@@ -674,14 +674,14 @@ def show_amt(label, amt):
         amt = fmt_amount(amt)
     else:
         amt = None
-    print(" {}={}".format(label, amt))
+    print(" {}={}".format(label, amt), end='')
 
 
 def show_value(label, value):
     # my($label, $value) = @_;
     if not value:
         value = None
-    print(" {}={}".format(label, value))
+    print(" {}={}".format(label, value), end='')
 
 
 def fmt_name(first_name, middle_name, last_name):
@@ -842,7 +842,7 @@ def setup_conf():
 
     print(
         "\nA configuration file has been created at '{}'.\nFollow the instructions in the file to finish the "
-        "configuration process.\n".format(local_conf_file)
+        "configuration process.".format(local_conf_file)
     )
     sys.exit()
 
@@ -896,7 +896,7 @@ def commas(x):
 
 
 def error(msg):
-    print("{}: {}\n".format(me, msg))
+    print("{}: {}".format(me, msg))
     sys.exit()
 
 
@@ -916,7 +916,7 @@ def config_error(error_message, num_parameters=1):
             message = error_message
         else:
             message = "{} \nThe configuration file ({}) should have one entry for each of the " \
-                      "following:\n\tapi_key\n\tapi_id\n\tresource_name\n\trest_url_base\n".format(error_message,
+                      "following:\n\tapi_key\n\tapi_id\n\tresource_name\n\trest_url_base".format(error_message,
                                                                                                    conf_file)
         print(message)
         sys.exit()
@@ -1297,7 +1297,7 @@ def check_config():
             sys.stderr.write("\n")
             setup_conf()
         else:
-            print("Unable to find the configuration file.\nPlease contact your system administrator.\n")
+            print("Unable to find the configuration file.\nPlease contact your system administrator.")
             sys.exit()
 
     # read in config file
