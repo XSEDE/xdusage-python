@@ -1061,7 +1061,7 @@ def get_user(username, portal=0):
     # construct a rest url and fetch it
     # don't forget to uri escape these things in case one has funny
     # characters
-    if portal:
+    if not portal:
         url = "{}/xdusage/v2/people/by_username/{}/{}".format(rest_url,
                                                               urllib.parse.quote(resource),
                                                               urllib.parse.quote(username))
